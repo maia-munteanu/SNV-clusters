@@ -53,8 +53,8 @@ sample_name=strsplit(VCF,"[.]")[[1]][1]
 cat("\n \n","Outputting beds for sample ",sample_name,"\n")
 
 setwd(output)
-write.table(closer_df,file=paste(sample_name,"_0_",closer/1000,"kb.bed",sep=""),quote=FALSE,col.names=FALSE,row.names=FALSE,sep="\t")
-write.table(close_df,file=paste(sample_name,"_",closer/1000,"kb_",close/1000,"kb.bed",sep=""),quote=FALSE,col.names=FALSE,row.names=FALSE,sep="\t")
-write.table(cluster_df, file=paste(sample_name,"_0_",close/1000,"kb.bed",sep=""), quote=FALSE, col.names=FALSE, row.names=FALSE, sep="\t")
+write.table(closer_df,file=paste(sample_name,"_0_",closer/1000,"kb_closer.bed",sep=""),quote=FALSE,col.names=FALSE,row.names=FALSE,sep="\t")
+write.table(close_df,file=paste(sample_name,"_",closer/1000,"kb_",close/1000,"kb_close.bed",sep=""),quote=FALSE,col.names=FALSE,row.names=FALSE,sep="\t")
+write.table(cluster_df, file=paste(sample_name,"_0_",close/1000,"kb_cluster.bed",sep=""), quote=FALSE, col.names=FALSE, row.names=FALSE, sep="\t")
 
 
