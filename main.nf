@@ -58,7 +58,7 @@ params.closer_value = null
 params.close_value = null
 params.output_folder = null 
 params.fasta_ref = null
-params.hg19 = NULL 
+params.hg19 = null
 
 
 pairs_list = Channel.fromPath(params.input_file, checkIfExists: true).splitCsv(header: true, sep: '\t', strip: true)
