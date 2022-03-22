@@ -40,7 +40,7 @@ if (params.help) {
     log.info 'nextflow run main.nf --input_file list_SV_SNV.txt --distance 1'
     log.info ''
     log.info 'Mandatory arguments:'
-    log.info '    --input_file                   STRING         Input file containing 3 columns: sample name, SV vcf path and SNV vcf path.'
+    log.info '    --input_file                   STRING         Input .csv file containing 3 columns: sample name, SV vcf path and SNV vcf path.'
     log.info '    --closer_value                 INTEGER        Maximum distance (in bp) between the SV breakpoint and the farthest SNV in the high confidence clusters.'
     log.info '    --close_value                  INTEGER        Maximum distance (in bp) between the SV breakpoint and the farthest SNV in the low confidence clusters.'
     log.info '    --output_folder                FOLDER         Output folder.'
@@ -58,5 +58,27 @@ params.close_value = null
 params.output_folder = null 
 params.fasta_ref = null
 
+pairs_list = Channel.fromPath(params.input_file, checkIfExists: true).splitCsv(header: true, sep: '\t', strip: true)
+                   .map{ row -> [ row.sample, file(row.sv), file(row.snv) ] }.view()
 
+process make_beds {
+
+       publishDir params.output_folder+"/SV_BEDs/", mode: 'copy', pattern: '*.bed'
+
+       tag {sample}
+
+       input:
+       set val(sample), file(sv), file(snv) from pairs_list
+
+       output:
+       set val(sample), file(sv), file(snv), file("*.bed") into beds
+
+       shell:
+       '''
+       bcftools view -f 'PASS' !{sv} -Oz > sv_pass.vcf.gz
+       echo "We consider a VCF of clusters from Manta SV calling"
+       Rscript  !{baseDir}/bin/vcf_to_bed.R --VCF=cluster_pass.vcf.gz --caller=manta --output_bed=cluster.bed
+       cat cluster.bed | sort -k1,1 -k2,2n | bedtools merge -i stdin | awk '{print $1"\t"$2"\t"$3}' > !{sample}_cluster_merged.bed
+       '''
+  }
 
