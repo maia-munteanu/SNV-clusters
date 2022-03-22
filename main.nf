@@ -30,7 +30,6 @@ log.info "----------------------------------------------------------------------
 log.info ""
 
 params.help = null
-
 if (params.help) {
     log.info ''
     log.info '--------------------------------------------------'
@@ -45,9 +44,19 @@ if (params.help) {
     log.info '    --closer_value                 INTEGER        Maximum distance (in bp) between the SV breakpoint and the farthest SNV in the high confidence clusters.'
     log.info '    --close_value                  INTEGER        Maximum distance (in bp) between the SV breakpoint and the farthest SNV in the low confidence clusters.'
     log.info '    --output_folder                FOLDER         Output folder.'
+    log.info '    --fasta_ref                    FILE           Fasta reference file.'
     log.info ''
     log.info 'Flags:'
     log.info '    --help                                        Display this message'
     log.info ''
     exit 0
 }
+
+params.input_file = null
+params.closer_value = null
+params.close_value = null
+params.output_folder = null 
+params.fasta_ref = null
+
+
+
