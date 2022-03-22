@@ -45,6 +45,7 @@ if (params.help) {
     log.info '    --close_value                  INTEGER        Maximum distance (in bp) between the SV breakpoint and the farthest SNV in the low confidence clusters.'
     log.info '    --output_folder                FOLDER         Output folder.'
     log.info '    --fasta_ref                    FILE           Fasta reference file.'
+    log.info '    --hg19                         FILE           Tab delimited .genome file containing chromosome lengths for hg19.'
     log.info ''
     log.info 'Flags:'
     log.info '    --help                                        Display this message'
@@ -57,9 +58,13 @@ params.closer_value = null
 params.close_value = null
 params.output_folder = null 
 params.fasta_ref = null
+params.hg19 = NULL 
+
 
 pairs_list = Channel.fromPath(params.input_file, checkIfExists: true).splitCsv(header: true, sep: '\t', strip: true)
                    .map{ row -> [ row.sample, file(row.sv), file(row.snv) ] }.view()
+hg19 = file(params.hg19)
+
 
 process make_beds {
 
@@ -69,15 +74,33 @@ process make_beds {
 
        input:
        set val(sample), file(sv), file(snv) from pairs_list
+       file hg19
 
        output:
-       set val(sample), file(sv), file(snv), file("*.bed") into beds
+       set val(sample), file(sv), file(snv) into beds
+       set file("*unclustered.bed") file("*
 
        shell:
        '''
        bcftools view -f 'PASS' !{sv} -Oz > !{sample}_filt.vcf.gz
-       Rscript  !{baseDir}/vcf_to_bed.R --VCF !{sample}_filt.vcf.gz --close 10000 --closer 1000
-      
+       Rscript  !{baseDir}/vcf_to_bed.R --VCF !{sample}_filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
+       bedtools complement -i !{sample}_0_!{params.close_value}.bed -g !{hg19} > !{sample}_unclustered.bed
        '''
   }
 
+
+process make_vcfs {
+    
+    publishDir params.output_folder+"/SNV_clusters_VCFs/", mode: 'move', pattern: '*_clustered_*.vcf.gz'
+    publishDir params.output_folder+"/SNV_clusters_VCFs/", mode: 'move', pattern: '*_unclustered_*.vcf.gz'
+
+    
+    tag {sample}
+
+
+    
+    
+    
+}   
+    
+    
