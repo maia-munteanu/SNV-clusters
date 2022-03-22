@@ -40,7 +40,7 @@ if (params.help) {
     log.info 'nextflow run main.nf --input_file list_SV_SNV.txt --distance 1'
     log.info ''
     log.info 'Mandatory arguments:'
-    log.info '    --input_file                   STRING         Input .csv file containing 3 columns: sample name, SV vcf path and SNV vcf path.'
+    log.info '    --input_file                   FILE           Input .csv file containing 3 columns: sample name, SV vcf path and SNV vcf path.'
     log.info '    --closer_value                 INTEGER        Maximum distance (in bp) between the SV breakpoint and the farthest SNV in the high confidence clusters.'
     log.info '    --close_value                  INTEGER        Maximum distance (in bp) between the SV breakpoint and the farthest SNV in the low confidence clusters.'
     log.info '    --output_folder                FOLDER         Output folder.'
