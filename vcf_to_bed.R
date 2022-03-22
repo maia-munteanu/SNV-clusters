@@ -15,9 +15,10 @@ if(! is.null(args$help)) {
   cat("
       Mandatory arguments:
       --VCF                        - Input VCF to compute the BED file
-      --output                     - Output folder
       --close                      - Maximum distance between the SV breakpoint and the farthest SNV in the low confidence clusters
       --closer                     - Maximum distance between the SV breakpoint and the farthest SNV in the high confidence clusters  
+      Optional arguments:
+      --output                     - Output folder, otuputs to the current directory by default
       
       --help \n\n")
   q(save="no")
@@ -25,9 +26,9 @@ if(! is.null(args$help)) {
 
 
 if(is.null(args$VCF)) {stop("Option --VCF should be provided")} else{VCF=args$VCF}
-if(is.null(args$output)) {stop("Option --Output folder would be provided")} else{output=args$output}
 if(is.null(args$close)) {stop("Option --close threshold should be provided")} else{close=as.numeric(args$close)}
 if(is.null(args$closer)) {stop("Option --closer threshold should be provided")} else{closer=as.numeric(args$closer)}
+if(is.null(args$output)) {output="./"} else{output=args$output}
 
 sv_chr = system(paste("bcftools query -f '%CHROM\n' ", VCF, sep=""), intern = T)
 sv_pos = as.numeric(system(paste("bcftools query -f '%POS\n' ", VCF, sep=""), intern = T))
