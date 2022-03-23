@@ -66,7 +66,7 @@ pairs_list = Channel.fromPath(params.input_file, checkIfExists: true).splitCsv(h
 hg19 = file(params.hg19)
 fasta_ref=file(params.fasta_ref)
 
-process make_beds {
+process make_sv_beds {
 
        publishDir params.output_folder+"/SV_BEDs/", mode: 'copy', pattern: '*.bed'
 
@@ -95,7 +95,7 @@ process make_beds {
   }
 
 
-process make_vcfs {
+process make_snv_vcfs {
     
     publishDir params.output_folder+"/SNV_clusters_VCFs/", mode: 'move', pattern: '*_clustered_*.vcf.gz'
     publishDir params.output_folder+"/SNV_clusters_VCFs/", mode: 'move', pattern: '*_unclustered.vcf.gz'
@@ -124,9 +124,9 @@ process make_vcfs {
     bcftools view -f 'PASS' !{snv} -Oz > !{sample}.snv.filt.vcf.gz
     tabix -p vcf !{sample}.snv.filt.vcf.gz
     
-    bcftools view -f PASS --regions-file unclustered.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_unclustered.vcf.gz
-    bcftools view -f PASS --regions-file closer.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.vcf.gz
-    bcftools view -f PASS --regions-file close.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.vcf.gz
+    bcftools view -I -f PASS --regions-file unclustered.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_unclustered.vcf.gz
+    bcftools view -I -f PASS --regions-file closer.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.vcf.gz
+    bcftools view -I -f PASS --regions-file close.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.vcf.gz
     
     tabix -p vcf !{sample}_unclustered.vcf.gz
     tabix -p vcf !{sample}_clustered_0_${closer}kb.vcf.gz
