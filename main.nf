@@ -106,7 +106,7 @@ process make_vcfs {
     tag {sample}
 
     input:
-    set val(sample), file(sv), file(snv), file("*unclustered.bed"), file("*close.bed"), file("*closer.bed"), file("*cluster.bed") from beds
+    set val(sample), file(sv), file(snv), file("*.bed") from beds
     file fasta_ref
     
     output:
