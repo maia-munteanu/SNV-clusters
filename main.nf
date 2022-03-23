@@ -83,6 +83,7 @@ process make_beds {
        shell:
        '''
        close=!{params.close_value}/1000
+       echo $close
        bcftools view -f 'PASS' !{sv} -Oz > !{sample}_sv.filt.vcf.gz
        
        Rscript  !{baseDir}/vcf_to_bed.R --VCF !{sample}_sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
