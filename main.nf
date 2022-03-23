@@ -119,10 +119,7 @@ process make_vcfs {
     file fasta_ref
     
     output:
-    set val(sample), file(sv), file(snv) into vcfs
-    set file("*unclustered.snv.vcf.gz"), file("*unclustered.snv.vcf.gz.tbi"), file("*_clustered_*.snv.vcf.gz"), file("*_clustered_*.snv.vcf.gz.tbi") into vcfs
-    set file("*unclustered.mnv.vcf.gz"), file("*unclustered.mnv.vcf.gz.tbi"), file("*_clustered_*.mnv.vcf.gz"), file("*_clustered_*.mnv.vcf.gz.tbi") into vcfs
-
+    set val(sample), file(sv), file(snv), file("*snv*"), file("*mnv*"), file("*indel*") into vcfs
     
     shell:
     '''
