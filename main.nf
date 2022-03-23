@@ -82,8 +82,11 @@ process make_beds {
 
        shell:
        '''
-       let close_bp=!{params.close_value} close=close_bp/1000
+       close_bp=!{params.close_value}
+       bp_per_kb=1000
+       close=$((close_bp / bp_per_kb))
        echo $close
+    
        bcftools view -f 'PASS' !{sv} -Oz > !{sample}_sv.filt.vcf.gz
        
        Rscript  !{baseDir}/vcf_to_bed.R --VCF !{sample}_sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
@@ -111,8 +114,13 @@ process make_vcfs {
         
     shell:
     '''
-    close=!{params.close_value}/1000
-    closer=!{params.closer_value}/1000
+    close_bp=!{params.close_value}
+    closer_bp=!{params.closer_value}
+    bp_per_kb=1000
+    close=$((close_bp / bp_per_kb))
+    closer=$((closer_bp / bp_per_kb))
+    echo $close $closer
+   
     bcftools view -f 'PASS' !{snv} -Oz > !{sample}_snv.filt.vcf.gz
     tabix -p vcf !{sample}_snv.filt.vcf.gz
     
