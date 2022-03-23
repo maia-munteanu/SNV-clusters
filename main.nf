@@ -54,11 +54,11 @@ if (params.help) {
 }
 
 params.input_file = null
-params.closer_value = null
-params.close_value = null
-params.output_folder = null 
-params.fasta_ref = null
-params.hg19 = null
+params.closer_value = 1000
+params.close_value = 10000
+params.output_folder = "/g/strcombio/fsupek_cancer1/SV_clusters_project/"
+params.fasta_ref = "/g/strcombio/fsupek_cancer1/SV_clusters_project/hg19.fasta"
+params.hg19 = "/g/strcombio/fsupek_cancer1/SV_clusters_project/hg19.genome"
 
 
 pairs_list = Channel.fromPath(params.input_file, checkIfExists: true).splitCsv(header: true, sep: '\t', strip: true)
