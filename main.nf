@@ -87,9 +87,9 @@ process make_beds {
        close=$((close_bp / bp_per_kb))
        echo $close
     
-       bcftools view -f 'PASS' !{sv} -Oz > !{sample}_sv.filt.vcf.gz
+       bcftools view -f 'PASS' !{sv} -Oz > !{sample}.sv.filt.vcf.gz
        
-       Rscript  !{baseDir}/vcf_to_bed.R --VCF !{sample}_sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
+       Rscript  !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
        bedtools complement -i !{sample}_0_${close}kb_cluster.bed -g !{hg19} > !{sample}_unclustered.bed
        '''
   }
@@ -121,12 +121,12 @@ process make_vcfs {
     closer=$((closer_bp / bp_per_kb))
     echo $close $closer
    
-    bcftools view -f 'PASS' !{snv} -Oz > !{sample}_snv.filt.vcf.gz
-    tabix -p vcf !{sample}_snv.filt.vcf.gz
+    bcftools view -f 'PASS' !{snv} -Oz > !{sample}.snv.filt.vcf.gz
+    tabix -p vcf !{sample}.snv.filt.vcf.gz
     
-    bcftools view -f PASS --regions-file !{sample}_unclustered.bed !{sample}_snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_unclustered.vcf.gz
-    bcftools view -f PASS --regions-file !{sample}_0_${closer}kb_closer.bed !{sample}_snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.vcf.gz
-    bcftools view -f PASS --regions-file !{sample}!_${closer}kb_${close}kb_close.bed !{sample}_snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.vcf.gz
+    bcftools view -f PASS --regions-file !{sample}_unclustered.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_unclustered.vcf.gz
+    bcftools view -f PASS --regions-file !{sample}_0_${closer}kb_closer.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.vcf.gz
+    bcftools view -f PASS --regions-file !{sample}!_${closer}kb_${close}kb_close.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.vcf.gz
     
     tabix -p vcf !{sample}_unclustered.vcf.gz
     tabix -p vcf !{sample}_clustered_0_${closer}kb.vcf.gz
