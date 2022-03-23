@@ -110,7 +110,7 @@ process make_snv_vcfs {
     file fasta_ref
     
     output:
-    set val(sample), file(sv), file(snv), file("*unclustered.vcf.gz"), file("*unclustered.vcf.gz.tbi"), file("*_clustered_*.vcf.gz"), file("*_clustered_*.vcf.gz.tbi") into vcfs
+    set val(sample), file(sv), file(snv), file("*unclustered.snv.vcf.gz"), file("*unclustered.snv.vcf.gz.tbi"), file("*_clustered_*.snv.vcf.gz"), file("*_clustered_*.snv.vcf.gz.tbi") into vcfs
         
     shell:
     '''
@@ -124,13 +124,13 @@ process make_snv_vcfs {
     bcftools view -f 'PASS' !{snv} -Oz > !{sample}.snv.filt.vcf.gz
     tabix -p vcf !{sample}.snv.filt.vcf.gz
     
-    bcftools view -I -f PASS --regions-file unclustered.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_unclustered.vcf.gz
-    bcftools view -I -f PASS --regions-file closer.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.vcf.gz
-    bcftools view -I -f PASS --regions-file close.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.vcf.gz
+    bcftools view -f PASS --types snps --regions-file unclustered.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_unclustered.snv.vcf.gz
+    bcftools view -f PASS --types snps --regions-file closer.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.snv.vcf.gz
+    bcftools view -f PASS --types snps --regions-file close.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.snv.vcf.gz
     
-    tabix -p vcf !{sample}_unclustered.vcf.gz
-    tabix -p vcf !{sample}_clustered_0_${closer}kb.vcf.gz
-    tabix -p vcf !{sample}_clustered_${closer}kb_${close}kb.vcf.gz
+    tabix -p vcf !{sample}_unclustered.snv.vcf.gz
+    tabix -p vcf !{sample}_clustered_0_${closer}kb.snv.vcf.gz
+    tabix -p vcf !{sample}_clustered_${closer}kb_${close}kb.snv.vcf.gz
     '''
     
 }   
