@@ -82,7 +82,7 @@ process make_beds {
 
        shell:
        '''
-       close=!{params.close_value}/1000
+       let close_bp=!{params.close_value} close=close_bp/1000
        echo $close
        bcftools view -f 'PASS' !{sv} -Oz > !{sample}_sv.filt.vcf.gz
        
