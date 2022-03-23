@@ -106,7 +106,7 @@ process make_vcfs {
     tag {sample}
 
     input:
-    set val(sample), file(sv), file(snv), file("*.bed") from beds
+    set val(sample), file(sv), file(snv), file("*unclustered.bed"), file("*close.bed"), file("*closer.bed"), file("*cluster.bed") from beds
     file fasta_ref
     
     output:
@@ -124,9 +124,9 @@ process make_vcfs {
     bcftools view -f 'PASS' !{snv} -Oz > !{sample}.snv.filt.vcf.gz
     tabix -p vcf !{sample}.snv.filt.vcf.gz
     
-    bcftools view -f PASS --regions-file !{sample}_unclustered.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_unclustered.vcf.gz
-    bcftools view -f PASS --regions-file !{sample}_0_${closer}kb_closer.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.vcf.gz
-    bcftools view -f PASS --regions-file !{sample}!_${closer}kb_${close}kb_close.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.vcf.gz
+    bcftools view -f PASS --regions-file unclustered.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_unclustered.vcf.gz
+    bcftools view -f PASS --regions-file closer.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.vcf.gz
+    bcftools view -f PASS --regions-file close.bed !{sample}.snv.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1 -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.vcf.gz
     
     tabix -p vcf !{sample}_unclustered.vcf.gz
     tabix -p vcf !{sample}_clustered_0_${closer}kb.vcf.gz
