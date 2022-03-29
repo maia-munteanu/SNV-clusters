@@ -89,7 +89,7 @@ process make_sv_beds {
     
        bcftools view -f 'PASS' !{sv} -Oz > !{sample}.sv.filt.vcf.gz
        
-       Rscript  !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
+       Rscript --exclude=fsupeksvr5 !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
        bedtools complement -i !{sample}_0_${close}kb_cluster.bed -g !{hg19} > !{sample}_unclustered.bed
        '''
   }
