@@ -97,14 +97,9 @@ process make_sv_beds {
 
 process make_vcfs {
     
-    publishDir params.output_folder+"/SNV_clusters_VCFs/", mode: 'move', pattern: '*clustered*.snv.vcf.gz'
-    publishDir params.output_folder+"/SNV_clusters_VCFs/", mode: 'move', pattern: '*clustered*.snv.vcf.gz.tbi'
-    
-    publishDir params.output_folder+"/MNV_clusters_VCFs/", mode: 'move', pattern: '*clustered*.mnv.vcf.gz'
-    publishDir params.output_folder+"/MNV_clusters_VCFs/", mode: 'move', pattern: '*clustered*.mnv.vcf.gz.tbi'
-
-    publishDir params.output_folder+"/INDEL_clusters_VCFs/", mode: 'move', pattern: '*clustered*.indel.vcf.gz'
-    publishDir params.output_folder+"/INDEL_clusters_VCFs/", mode: 'move', pattern: '*clustered*.indel.vcf.gz.tbi'
+    publishDir params.output_folder+"/SNV_clusters_VCFs/", mode: 'move', pattern: '*.snv.vcf.gz*'    
+    publishDir params.output_folder+"/MNV_clusters_VCFs/", mode: 'move', pattern: '*.mnv.vcf.gz*'
+    publishDir params.output_folder+"/INDEL_clusters_VCFs/", mode: 'move', pattern: '*.indel.vcf.gz*'
     
     tag {sample}
 
