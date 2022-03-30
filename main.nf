@@ -123,22 +123,22 @@ process make_vcfs {
     tabix -p vcf !{sample}.filt.vcf.gz
     
     bcftools view -f PASS --types snps --regions-file unclustered.bed !{sample}.filt.vcf.gz | bcftools norm -d all -f !{fasta_ref} | bgzip -c > !{sample}_unclustered.snv.vcf.gz
-    bcftools view -f PASS --types snps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.snv.vcf.gz
-    bcftools view -f PASS --types snps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.snv.vcf.gz
+    bcftools view -f PASS --types snps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bgzip -c > !{sample}_clustered_0_${closer}kb.snv.vcf.gz
+    bcftools view -f PASS --types snps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.snv.vcf.gz
     tabix -p vcf !{sample}_unclustered.snv.vcf.gz
     tabix -p vcf !{sample}_clustered_0_${closer}kb.snv.vcf.gz
     tabix -p vcf !{sample}_clustered_${closer}kb_${close}kb.snv.vcf.gz
     
-    bcftools view -f PASS --types mnps --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_unclustered.mnv.vcf.gz
-    bcftools view -f PASS --types mnps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.mnv.vcf.gz
-    bcftools view -f PASS --types mnps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.mnv.vcf.gz
+    bcftools view -f PASS --types mnps --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bgzip -c > !{sample}_unclustered.mnv.vcf.gz
+    bcftools view -f PASS --types mnps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bgzip -c > !{sample}_clustered_0_${closer}kb.mnv.vcf.gz
+    bcftools view -f PASS --types mnps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.mnv.vcf.gz
     tabix -p vcf !{sample}_unclustered.mnv.vcf.gz
     tabix -p vcf !{sample}_clustered_0_${closer}kb.mnv.vcf.gz
     tabix -p vcf !{sample}_clustered_${closer}kb_${close}kb.mnv.vcf.gz
     
-    bcftools view -f PASS --types indels --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_unclustered.indel.vcf.gz
-    bcftools view -f PASS --types indels --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.indel.vcf.gz
-    bcftools view -f PASS --types indels --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.indel.vcf.gz
+    bcftools view -f PASS --types indels --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bgzip -c > !{sample}_unclustered.indel.vcf.gz
+    bcftools view -f PASS --types indels --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bgzip -c > !{sample}_clustered_0_${closer}kb.indel.vcf.gz
+    bcftools view -f PASS --types indels --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.indel.vcf.gz
     tabix -p vcf !{sample}_unclustered.indel.vcf.gz
     tabix -p vcf !{sample}_clustered_0_${closer}kb.indel.vcf.gz
     tabix -p vcf !{sample}_clustered_${closer}kb_${close}kb.indel.vcf.gz
