@@ -122,7 +122,7 @@ process make_vcfs {
     bcftools view -f 'PASS' !{snv} -Oz > !{sample}.filt.vcf.gz
     tabix -p vcf !{sample}.filt.vcf.gz
     
-    bcftools view -f PASS --types snps --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bcftools view -Oz > !{sample}_unclustered.snv.vcf.gz
+    bcftools view -f PASS --types snps --regions-file unclustered.bed !{sample}.filt.vcf.gz | bgzip -c > !{sample}_unclustered.snv.vcf.gz
     bcftools view -f PASS --types snps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_clustered_0_${closer}kb.snv.vcf.gz
     bcftools view -f PASS --types snps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | sort -k1,1V -k2,2n | bgzip -c > !{sample}_clustered_${closer}kb_${close}kb.snv.vcf.gz
     tabix -p vcf !{sample}_unclustered.snv.vcf.gz
