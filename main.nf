@@ -54,7 +54,7 @@ if (params.help) {
 }
 
 params.input_file = null
-params.closer_value = 1000
+params.closer_value = 2000
 params.close_value = 10000
 params.output_folder = "/g/strcombio/fsupek_cancer1/SV_clusters_project/"
 params.fasta_ref = "/g/strcombio/fsupek_cancer1/SV_clusters_project/hg19.fasta"
@@ -122,19 +122,28 @@ process make_vcfs {
     bcftools view -f 'PASS' !{snv} -Oz > !{sample}.filt.vcf.gz
     tabix -p vcf !{sample}.filt.vcf.gz
     
-    bcftools view -f PASS --types snps --regions-file unclustered.bed !{sample}.filt.vcf.gz | bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.snv.vcf.gz
-    bcftools view -f PASS --types snps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb.snv.vcf.gz
-    bcftools view -f PASS --types snps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb.snv.vcf.gz
+    bcftools view -i '%QUAL>500' -f PASS --types snps --regions-file unclustered.bed !{sample}.filt.vcf.gz | bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.highc.snv.vcf.gz
+    bcftools view -i '%QUAL>500' -f PASS --types snps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb.highc.snv.vcf.gz
+    bcftools view -i '%QUAL>500' -f PASS --types snps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb.highc.snv.vcf.gz
+    bcftools view -i '%QUAL<=500' -f PASS --types snps --regions-file unclustered.bed !{sample}.filt.vcf.gz | bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.lowc.snv.vcf.gz
+    bcftools view -i '%QUAL<=500' -f PASS --types snps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb.lowc.snv.vcf.gz
+    bcftools view -i '%QUAL<=500' -f PASS --types snps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb.lowc.snv.vcf.gz
     gunzip *.snv.vcf.gz
     
-    bcftools view -f PASS --types mnps --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.mnv.vcf.gz
-    bcftools view -f PASS --types mnps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb.mnv.vcf.gz
-    bcftools view -f PASS --types mnps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb.mnv.vcf.gz
+    bcftools view -i '%QUAL>500' -f PASS --types mnps --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.highc.mnv.vcf.gz
+    bcftools view -i '%QUAL>500' -f PASS --types mnps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb.highc.mnv.vcf.gz
+    bcftools view -i '%QUAL>500' -f PASS --types mnps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb.highc.mnv.vcf.gz
+    bcftools view -i '%QUAL<=500' -f PASS --types mnps --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.lowc.mnv.vcf.gz
+    bcftools view -i '%QUAL<=500' -f PASS --types mnps --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb.lowc.mnv.vcf.gz
+    bcftools view -i '%QUAL<=500' -f PASS --types mnps --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb.lowc.mnv.vcf.gz
     gunzip *.mnv.vcf.gz
     
-    bcftools view -f PASS --types indels --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.indel.vcf.gz
-    bcftools view -f PASS --types indels --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb.indel.vcf.gz
-    bcftools view -f PASS --types indels --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb.indel.vcf.gz
+    bcftools view -i '%QUAL>500' -f PASS --types indels --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.highc.indel.vcf.gz
+    bcftools view -i '%QUAL>500' -f PASS --types indels --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb.highc.indel.vcf.gz
+    bcftools view -i '%QUAL>500' -f PASS --types indels --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb.highc.indel.vcf.gz
+    bcftools view -i '%QUAL<=500' -f PASS --types indels --regions-file unclustered.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.lowc.indel.vcf.gz
+    bcftools view -i '%QUAL<=500' -f PASS --types indels --regions-file closer.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb.lowc.indel.vcf.gz
+    bcftools view -i '%QUAL<=500' -f PASS --types indels --regions-file close.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb.lowc.indel.vcf.gz
     gunzip *.indel.vcf.gz
     '''
     
