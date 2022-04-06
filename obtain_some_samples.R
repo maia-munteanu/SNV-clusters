@@ -61,12 +61,11 @@ for(file in hartwig_files){
 #Match the samples from the metadata file for each cancer type with the list of samples currently available and create new database 
 for (i in 1:no_of_cancer_types){
     temp_df=df[match(query_list[[i]], df$sample),]
+    temp_df=temp_df[which(!is.na(temp_df$sample)),]
     cat(length(temp_df[,1]), "/", length(query_list[[i]])," ",query_vector[i], " samples found in the given directory from total of samples in the metadata file \n")
     if (i==1){merge_df=temp_df} else {merge_df=rbind(merge_df,temp_df)}
 }
 
-#merge_df=merge_df[which(merge_df$sample!=NA),]
-print(merge_df[which(merge_df$sample==NA),])
 
 #write the .txt file 
 merge_names=paste(query_vector,collapse="+")
