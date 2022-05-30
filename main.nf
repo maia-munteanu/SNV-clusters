@@ -92,7 +92,7 @@ process make_sv_beds {
        Rscript !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
        bedtools complement -i !{sample}_0_${close}kb_cluster.bed -g !{hg19} > !{sample}_unclustered.bed
        
-       bedtools subtract -a !{sample}_${closer}kb_${close}kb_close.bed -b !{sample}_0_${closer}kb_closer.bed  > !{sample}_close_unique.bed"
+       bedtools subtract -a !{sample}_${closer}kb_${close}kb_close.bed -b !{sample}_0_${closer}kb_closer.bed  > !{sample}_close_unique.bed
        
        '''
   }
