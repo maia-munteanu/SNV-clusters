@@ -92,22 +92,16 @@ process make_sv_beds {
     
        bcftools view -f 'PASS' !{sv} -Oz > !{sample}.sv.filt.vcf.gz
        Rscript !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
-       
+      
+       bedtools complement -i !{sample}_0_${close}kb_cluster.bed -g !{hg19} > !{sample}_unclustered.bed
        bedtools subtract -a !{sample}_${closer}kb_${close}kb_close.bed -b !{sample}_0_${closer}kb_closer.bed  > !{sample}_${closer}kb_${close}kb_close_unique.bed
-       
-       
        
        sort -k1,1 -k2,2n !{sample}_${closer}kb_${close}kb_close_unique.bed > !{sample}_${closer}kb_${close}kb_close_unique_sorted.bed
        sort -k1,1 -k2,2n !{sample}_0_${closer}kb_closer.bed > !{sample}_0_${closer}kb_closer_sorted.bed
-       sort -k1,1 -k2,2n !{sample}_0_${close}kb_cluster.bed > !{sample}_0_${close}kb_cluster_sorted.bed
+       sort -k1,1 -k2,2n !{sample}_unclustered.bed > !{sample}_unclustered_sorted.bed
        
        bedtools merge -i !{sample}_${closer}kb_${close}kb_close_unique_sorted.bed > !{sample}_${closer}kb_${close}kb_close_unique_sorted_merged.bed
        bedtools merge -i !{sample}_0_${closer}kb_closer_sorted.bed > !{sample}_0_${closer}kb_closer_sorted_merged.bed
-       bedtools merge -i !{sample}_0_${close}kb_cluster_sorted.bed > !{sample}_0_${close}kb_cluster_sorted_merged.bed
-       
-       bedtools complement -i !{sample}_0_${close}kb_cluster_sorted_merged.bed -g !{hg19} > !{sample}_unclustered.bed
-       
-       sort -k1,1 -k2,2n !{sample}_unclustered.bed > !{sample}_unclustered_sorted.bed
        bedtools merge -i !{sample}_unclustered_sorted.bed > !{sample}_unclustered_sorted_merged.bed
              
        '''
