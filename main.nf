@@ -70,8 +70,6 @@ process make_sv_beds {
 
        publishDir params.output_folder+"/SV_BEDs/", mode: 'copy', pattern: '*.bed'
 
-       tag {sample}
-
        input:
        set val(sample), file(sv), file(snv) from pairs_list
        file hg19
@@ -111,8 +109,6 @@ process make_vcfs {
     publishDir params.output_folder+"/SNV_clusters_VCFs/", mode: 'move', pattern: '*.snv.vcf*'    
     publishDir params.output_folder+"/MNV_clusters_VCFs/", mode: 'move', pattern: '*.mnv.vcf*'
     publishDir params.output_folder+"/INDEL_clusters_VCFs/", mode: 'move', pattern: '*.indel.vcf*'
-    
-    tag {sample}
 
     input:
     set val(sample), file(sv), file(snv),  file("*closer_sorted_merged.bed"), file("*close_unique_sorted_merged.bed"), file("*unclustered_sorted_merged.bed") from beds
