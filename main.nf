@@ -53,7 +53,7 @@ if (params.help) {
     exit 0
 }
 
-params.input_file = null
+params.input_file = "/g/strcombio/fsupek_cancer1/SV_clusters_project/Hartwig_all_samples_filt.csv"
 params.closer_value = 2000
 params.close_value = 10000
 params.output_folder = "/g/strcombio/fsupek_cancer1/SV_clusters_project/"
