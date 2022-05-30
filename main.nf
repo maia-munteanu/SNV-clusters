@@ -83,9 +83,12 @@ process make_sv_beds {
        shell:
        '''
        close_bp=!{params.close_value}
+       closer_bp=!{params.closer_value}
        bp_per_kb=1000
        close=$((close_bp / bp_per_kb))
+       closer=$((closer_bp / bp_per_kb))
        echo $close
+       echo $closer
     
        bcftools view -f 'PASS' !{sv} -Oz > !{sample}.sv.filt.vcf.gz
        
