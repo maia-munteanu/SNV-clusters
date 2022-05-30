@@ -77,7 +77,7 @@ process make_sv_beds {
        file hg19
 
        output:
-       set val(sample), file(sv), file(snv), file("*closer_sorted_merged.bed"), file("(close_unique_sorted_merged.bed"), file("*unclustered_sorted_merged.bed"), file("*closer.bed"), file("*close.bed"), file("*unclustered.bed") into beds
+       set val(sample), file(sv), file(snv), file("*closer_sorted_merged.bed"), file("*close_unique_sorted_merged.bed"), file("*unclustered_sorted_merged.bed"), file("*closer.bed"), file("*close.bed"), file("*unclustered.bed") into beds
        
 
        shell:
