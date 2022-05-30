@@ -87,8 +87,6 @@ process make_sv_beds {
        bp_per_kb=1000
        close=$((close_bp / bp_per_kb))
        closer=$((closer_bp / bp_per_kb))
-       echo $close
-       echo $closer
     
        bcftools view -f 'PASS' !{sv} -Oz > !{sample}.sv.filt.vcf.gz
        Rscript !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
@@ -141,7 +139,6 @@ process make_vcfs {
     bcftools view -i '%QUAL<=500' -f PASS --types snps --regions-file unclustered_sorted_merged.bed !{sample}.filt.vcf.gz | bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered_lowc.snv.vcf.gz
     bcftools view -i '%QUAL<=500' -f PASS --types snps --regions-file closer_sorted_merged.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_0_${closer}kb_lowc.snv.vcf.gz
     bcftools view -i '%QUAL<=500' -f PASS --types snps --regions-file close_unique_sorted_merged.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_clustered_${closer}kb_${close}kb_lowc.snv.vcf.gz
-    
     gunzip *.snv.vcf.gz
     
     bcftools view -i '%QUAL>500' -f PASS --types mnps --regions-file unclustered_sorted_merged.bed !{sample}.filt.vcf.gz |  bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered_highc.mnv.vcf.gz
