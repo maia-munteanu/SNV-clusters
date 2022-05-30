@@ -77,7 +77,7 @@ process make_sv_beds {
        file hg19
 
        output:
-       set val(sample), file(sv), file(snv), file("*unclustered.bed"), file("*close.bed"), file("*closer.bed"), file("*cluster.bed"), file("*unique.bed") into beds
+       set val(sample), file(sv), file(snv), file("*unclustered.bed"), file("*close.bed"), file("*closer.bed"), file("*cluster.bed"), file("*unique.bed"), file("*merged.bed") into beds
        
 
        shell:
@@ -95,7 +95,13 @@ process make_sv_beds {
        Rscript !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
        bedtools complement -i !{sample}_0_${close}kb_cluster.bed -g !{hg19} > !{sample}_unclustered.bed
        
-       bedtools subtract -a !{sample}_${closer}kb_${close}kb_close.bed -b !{sample}_0_${closer}kb_closer.bed  > !{sample}_close_unique.bed
+       bedtools subtract -a !{sample}_${closer}kb_${close}kb_close.bed -b !{sample}_0_${closer}kb_closer.bed  > !{sample}_${closer}kb_${close}kb_close_unique.bed
+       
+       bedtools merge -i !{sample}_0_${closer}kb_closer.bed > !{sample}_0_${closer}kb_closer_merged.bed
+       bedtools merge -i !{sample}_0_${close}kb_cluster.bed > !{sample}_0_${close}kb_cluster_merged.bed
+       bedtools merge -i !{sample}_unclustered.bed > !{sample}_unclustered_merged.bed
+       bedtools merge -i !{sample}_${closer}kb_${close}kb_close_unique.bed > !{sample}_${closer}kb_${close}kb_close_unique_merged.bed
+       
        
        '''
   }
