@@ -52,9 +52,31 @@ cluster_df[which(cluster_df$START<0),"START"]=1
 sample_name=strsplit(VCF,"[.]")[[1]][1]
 cat("\n \n","Outputting beds for sample ",sample_name,"\n")
 
-setwd(output)
-write.table(closer_df,file=paste(sample_name,"_0_",closer/1000,"kb_closer.bed",sep=""),quote=FALSE,col.names=FALSE,row.names=FALSE,sep="\t")
-write.table(close_df,file=paste(sample_name,"_",closer/1000,"kb_",close/1000,"kb_close.bed",sep=""),quote=FALSE,col.names=FALSE,row.names=FALSE,sep="\t")
-write.table(cluster_df, file=paste(sample_name,"_0_",close/1000,"kb_cluster.bed",sep=""), quote=FALSE, col.names=FALSE, row.names=FALSE, sep="\t")
 
+closer_file_name=paste(sample_name,"_0_",closer/1000,"kb_closer.bed",sep="")
+close_file_name=paste(sample_name,"_",closer/1000,"kb_",close/1000,"kb_close.bed",sep="")
+cluster_file_name=paste(sample_name,"_0_",close/1000,"kb_cluster.bed",sep="")
+cluster_merged_file_name=paste(sample_name,"_0_",close/1000,"kb_cluster_merged.bed",sep="")
+
+#output beds
+setwd(output)
+write.table(closer_df,file=closer_file_name,quote=FALSE,col.names=FALSE,row.names=FALSE,sep="\t")
+write.table(close_df,file=close_file_name,quote=FALSE,col.names=FALSE,row.names=FALSE,sep="\t")
+write.table(cluster_df, file=cluster_file_name, quote=FALSE, col.names=FALSE, row.names=FALSE, sep="\t")
+
+#merge cluster bed (bed which contains all clustered mutations, closer and close)
+system(paste(
+             "/usr/bin/bedtools merge -i ",
+              cluster_file_name,
+              " > ",
+              cluster_merged_file_name, 
+              sep=""))  
+
+#system(paste("/usr/bin/bedtools subtract -a ",flanking_off_crg75_nochr_whole.bed" -b "off_crg75_nochr.bed"  > "flanking_off_crg75_nochr_unique.bed",sep="")
+
+#system(paste("/usr/bin/bedtools merge -i ",paste(sample_name,"_0_",closer/1000,"kb_closer.bed",sep=""), " > ", paste(sample_name,"_0_",closer/1000,"kb_closer_merged.bed",sep=""),sep=""))
+#system(paste("/usr/bin/bedtools merge -i ",paste(sample_name,"_",closer/1000,"kb_",close/1000,"kb_close.bed",sep=""), " > ", paste(sample_name,"_",closer/1000,"kb_",close/1000,"kb_close_merged.bed",sep=""),sep=""))
+
+
+ 
 
