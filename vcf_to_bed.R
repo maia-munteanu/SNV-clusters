@@ -37,7 +37,7 @@ closer_df=data.frame(CHR=sv_chr, START=sv_pos-closer, END=sv_pos+closer)
 closer_df[which(closer_df$START < 0), "START"] = 1
 
 close_low_df=data.frame(CHR=sv_chr, START=sv_pos-close, END=sv_pos-closer)
-close_low_df=close_low_df[which(close_low_df$END>0),]
+close_low_df=close_low_df[which(close_low_df$START>0),]
 close_high_df=data.frame(CHR=sv_chr, START=sv_pos+closer, END=sv_pos+close)
 close_df=rbind(close_low_df,close_high_df)
 
