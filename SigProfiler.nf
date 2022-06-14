@@ -105,7 +105,7 @@ process make_vcfs {
     file fasta_ref
     
     output:
-    set val(sample), file(sv), file(snv), file("*snv*"), file("*mnv*"), file("*indel*") into vcfs
+    set val(sample), file(sv), file(snv), file("*snv*") into vcfs
     
     shell:
     '''
