@@ -42,10 +42,11 @@ if (params.help) {
     log.info '    --input_file                   FILE           Input .csv file containing 2 columns: sample name and SNV vcf path.'
     log.info '    --output_folder                FOLDER         Output folder.'
     log.info '    --Off_targets_bed              FILE           Bed containing the coordinates to off targets of AID.'
-    log.info '    --Off_flanking_bed              FILE          Bed containing the coordinates to off target flanking regions.'
+    log.info '    --Off_flanking_bed             FILE           Bed containing the coordinates to off target flanking regions.'
     log.info '    --On_targets_bed               FILE           Bed containing the coordinates to correct/on targets of AID.'
-    log.info '    --On_flaking_bed              FILE            Bed containing the coordinates to on target flanking regions.'
+    log.info '    --On_flaking_bed               FILE           Bed containing the coordinates to on target flanking regions.'
     log.info '    --fasta_ref                    FILE           Fasta reference file.'
+    log.info '    --CRG75                        FILE           Low mappability bed, here CRG75 where all regions with >1 occurance are excluded.'
     log.info ''
     log.info 'Flags:'
     log.info '    --help                                        Display this message'
@@ -60,12 +61,14 @@ params.Off_flanking_bed = "/g/strcombio/fsupek_cancer1/SV_clusters_project/AID_b
 params.On_flanking_bed = "/g/strcombio/fsupek_cancer1/SV_clusters_project/AID_beds/flanking_on_crg75_nochr_excl.bed"
 params.output_folder = "/g/strcombio/fsupek_cancer1/SV_clusters_project/AID_mutations"
 params.fasta_ref = "/g/strcombio/fsupek_cancer1/SV_clusters_project/hg19.fasta"
+params.CRG75 = "/home/mmunteanu/reference/CRG75.bed"
 
 fasta_ref=file(params.fasta_ref)
 Off_targets_bed=file(params.Off_targets_bed)
 On_targets_bed=file(params.On_targets_bed)
 Off_flanking_bed=file(params.Off_flanking_bed)
 On_flanking_bed=file(params.On_flanking_bed)
+CRG75=file(params.CRG75)
 
 pairs_list = Channel.fromPath(params.input_file, checkIfExists: true).splitCsv(header: true, sep: '\t', strip: true)
                    .map{ row -> [ row.sample, file(row.snv) ] }.view()
@@ -83,13 +86,14 @@ process get_vcfs {
        file On_targets_bed
        file Off_flanking_bed
        file On_flanking_bed
+       file CRG75
     
        output:
        set val(sample), file(snv), file("*snv.vcf*") into vcfs
 
        shell:
        '''
-       bcftools view -f 'PASS' !{snv} -Oz > !{sample}.filt.vcf.gz
+       bcftools view -f 'PASS' --regions-file !{CRG75} !{snv} -Oz > !{sample}.filt.vcf.gz
        tabix -p vcf !{sample}.filt.vcf.gz
        
        bcftools view --types snps --regions-file !{Off_targets_bed} !{sample}.filt.vcf.gz | bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_Offtarget_region.snv.vcf.gz
