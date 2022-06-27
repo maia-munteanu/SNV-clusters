@@ -46,6 +46,7 @@ if (params.help) {
     log.info '    --output_folder                FOLDER         Output folder.'
     log.info '    --fasta_ref                    FILE           Fasta reference file.'
     log.info '    --hg19                         FILE           Tab delimited .genome file containing chromosome lengths for hg19.'
+    log.info '    --CRG75                        FILE           Low mappability bed, here CRG75 where all regions with >1 occurance are excluded.'
     log.info ''
     log.info 'Flags:'
     log.info '    --help                                        Display this message'
@@ -59,12 +60,14 @@ params.close_value = 10000
 params.output_folder = "/g/strcombio/fsupek_cancer1/SV_clusters_project/"
 params.fasta_ref = "/g/strcombio/fsupek_cancer1/SV_clusters_project/hg19.fasta"
 params.hg19 = "/g/strcombio/fsupek_cancer1/SV_clusters_project/hg19.genome"
+params.CRG75 = "/home/mmunteanu/reference/CRG75.bed"
 
 
 pairs_list = Channel.fromPath(params.input_file, checkIfExists: true).splitCsv(header: true, sep: '\t', strip: true)
                    .map{ row -> [ row.sample, file(row.sv), file(row.snv) ] }.view()
 hg19 = file(params.hg19)
 fasta_ref=file(params.fasta_ref)
+CRG75=file(params.CRG75)
 
 process make_sv_beds {
 
@@ -73,6 +76,7 @@ process make_sv_beds {
        input:
        set val(sample), file(sv), file(snv) from pairs_list
        file hg19
+       file CRG75
 
        output:
        set val(sample), file(sv), file(snv), file("*closer_sorted_merged.bed"), file("*close_unique_sorted_merged.bed"), file("*unclustered_sorted_merged.bed") into beds
@@ -86,7 +90,7 @@ process make_sv_beds {
        close=$((close_bp / bp_per_kb))
        closer=$((closer_bp / bp_per_kb))
     
-       bcftools view -f 'PASS' !{sv} -Oz > !{sample}.sv.filt.vcf.gz
+       bcftools view -f 'PASS' --regions-file !{CRG75} !{sv} -Oz > !{sample}.sv.filt.vcf.gz
        Rscript !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
       
        bedtools complement -i !{sample}_0_${close}kb_cluster.bed -g !{hg19} > !{sample}_unclustered.bed
@@ -113,6 +117,7 @@ process make_vcfs {
     input:
     set val(sample), file(sv), file(snv),  file("*closer_sorted_merged.bed"), file("*close_unique_sorted_merged.bed"), file("*unclustered_sorted_merged.bed") from beds
     file fasta_ref
+    file CRG75
     
     output:
     set val(sample), file(sv), file(snv), file("*snv*"), file("*mnv*"), file("*indel*") into vcfs
@@ -126,7 +131,7 @@ process make_vcfs {
     closer=$((closer_bp / bp_per_kb))
     echo $close $closer
    
-    bcftools view -f 'PASS' !{snv} -Oz > !{sample}.filt.vcf.gz
+    bcftools view -f 'PASS' --regions-file !{CRG75} !{snv} -Oz > !{sample}.filt.vcf.gz
     tabix -p vcf !{sample}.filt.vcf.gz
     
     bcftools view -f PASS --types snps --regions-file unclustered_sorted_merged.bed !{sample}.filt.vcf.gz | bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.snv.vcf.gz
