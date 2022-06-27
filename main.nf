@@ -90,7 +90,7 @@ process make_sv_beds {
        close=$((close_bp / bp_per_kb))
        closer=$((closer_bp / bp_per_kb))
     
-       bcftools view -f 'PASS' --regions-file !{CRG75} !{sv} | bcftools sort -Oz > !{sample}.sv.filt.vcf.gz
+       bcftools view -f 'PASS' --regions-file !{CRG75} !{sv} | bgzip -c > !{sample}.sv.filt.vcf.gz
        Rscript !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
       
        bedtools complement -i !{sample}_0_${close}kb_cluster.bed -g !{hg19} > !{sample}_unclustered.bed
@@ -131,7 +131,7 @@ process make_vcfs {
     closer=$((closer_bp / bp_per_kb))
     echo $close $closer
    
-    bcftools view -f 'PASS' --regions-file !{CRG75} !{snv} | bcftools sort -Oz > !{sample}.filt.vcf.gz
+    bcftools view -f 'PASS' --regions-file !{CRG75} !{snv} | bgzip -c > !{sample}.filt.vcf.gz
     tabix -p vcf !{sample}.filt.vcf.gz
     
     bcftools view -f PASS --types snps --regions-file unclustered_sorted_merged.bed !{sample}.filt.vcf.gz | bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_unclustered.snv.vcf.gz
