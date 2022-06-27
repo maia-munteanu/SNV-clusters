@@ -61,7 +61,7 @@ params.Off_flanking_bed = "/g/strcombio/fsupek_cancer1/SV_clusters_project/AID_b
 params.On_flanking_bed = "/g/strcombio/fsupek_cancer1/SV_clusters_project/AID_beds/flanking_on_crg75_nochr_excl.bed"
 params.output_folder = "/g/strcombio/fsupek_cancer1/SV_clusters_project/AID_mutations"
 params.fasta_ref = "/g/strcombio/fsupek_cancer1/SV_clusters_project/hg19.fasta"
-params.CRG75 = "/home/mmunteanu/reference/CRG75.bed"
+params.CRG75 = "/home/mmunteanu/reference/CRG75_nochr.bed"
 
 fasta_ref=file(params.fasta_ref)
 Off_targets_bed=file(params.Off_targets_bed)
@@ -93,7 +93,8 @@ process get_vcfs {
 
        shell:
        '''
-       bcftools view -f 'PASS' --regions-file !{CRG75} !{snv} -Oz > !{sample}.filt.vcf.gz
+       tabix -p vcf !{snv}
+       bcftools view -f 'PASS' --regions-file !{CRG75} !{snv} | bcftools sort -Oz > !{sample}.filt.vcf.gz
        tabix -p vcf !{sample}.filt.vcf.gz
        
        bcftools view --types snps --regions-file !{Off_targets_bed} !{sample}.filt.vcf.gz | bcftools norm -d all -f !{fasta_ref} | bcftools sort -Oz > !{sample}_Offtarget_region.snv.vcf.gz
