@@ -60,7 +60,7 @@ params.close_value = 10000
 params.output_folder = "/g/strcombio/fsupek_cancer1/SV_clusters_project/"
 params.fasta_ref = "/g/strcombio/fsupek_cancer1/SV_clusters_project/hg19.fasta"
 params.hg19 = "/g/strcombio/fsupek_cancer1/SV_clusters_project/hg19.genome"
-params.CRG75 = "/home/mmunteanu/reference/CRG75.bed"
+params.CRG75 = "/home/mmunteanu/reference/CRG75_nochr.bed"
 
 
 pairs_list = Channel.fromPath(params.input_file, checkIfExists: true).splitCsv(header: true, sep: '\t', strip: true)
@@ -90,6 +90,7 @@ process make_sv_beds {
        close=$((close_bp / bp_per_kb))
        closer=$((closer_bp / bp_per_kb))
     
+       tabix -p vcf !{sv}
        bcftools view -f 'PASS' --regions-file !{CRG75} !{sv} | bcftools sort -Oz > !{sample}.sv.filt.vcf.gz
        Rscript !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
       
@@ -131,6 +132,7 @@ process make_vcfs {
     closer=$((closer_bp / bp_per_kb))
     echo $close $closer
    
+    tabix -p vcf !{snv}
     bcftools view -f 'PASS' --regions-file !{CRG75} !{snv} | bcftools sort -Oz > !{sample}.filt.vcf.gz
     tabix -p vcf !{sample}.filt.vcf.gz
     
