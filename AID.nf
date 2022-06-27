@@ -19,7 +19,7 @@
 
 log.info ""
 log.info "--------------------------------------------------------------------------"
-log.info "  AID mutations "
+log.info "  AID mutations - extracting mutations from on and off AID target regions"
 log.info "--------------------------------------------------------------------------"
 log.info "Copyright (C) IRB Barcelona"
 log.info "This program comes with ABSOLUTELY NO WARRANTY; for details see LICENSE"
@@ -36,7 +36,7 @@ if (params.help) {
     log.info '--------------------------------------------------'
     log.info ''
     log.info 'Usage: '
-    log.info 'nextflow run main.nf '
+    log.info 'nextflow run AID.nf '
     log.info ''
     log.info 'Mandatory arguments:'
     log.info '    --input_file                   FILE           Input .csv file containing 2 columns: sample name and SNV vcf path.'
