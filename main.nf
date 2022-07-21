@@ -79,9 +79,8 @@ process make_sv_beds {
        file CRG75
 
        output:
-       set val(sample), file(sv), file(snv), file("*closer_sorted_merged.bed"), file("*close_unique_sorted_merged.bed"), file("*unclustered_sorted_merged.bed") into beds
+       set val(sample), file(sv), file(snv), file("*closer.bed"), file("*close.bed"), file("*unclustered.bed") into beds
        
-
        shell:
        '''
        close_bp=!{params.close_value}
@@ -92,19 +91,14 @@ process make_sv_beds {
     
        tabix -p vcf !{sv}
        bcftools view -f 'PASS' --regions-file !{CRG75} !{sv} | bcftools sort -Oz > !{sample}.sv.filt.vcf.gz
-       Rscript !{baseDir}/vcf_to_bed.R --VCF !{sample}.sv.filt.vcf.gz --close !{params.close_value} --closer !{params.closer_value}
-      
-       bedtools complement -i !{sample}_0_${close}kb_cluster.bed -g !{hg19} > !{sample}_unclustered.bed
-       bedtools subtract -a !{sample}_${closer}kb_${close}kb_close.bed -b !{sample}_0_${closer}kb_closer.bed  > !{sample}_${closer}kb_${close}kb_close_unique.bed
        
-       sort -k1,1 -k2,2n !{sample}_${closer}kb_${close}kb_close_unique.bed > !{sample}_${closer}kb_${close}kb_close_unique_sorted.bed
-       sort -k1,1 -k2,2n !{sample}_0_${closer}kb_closer.bed > !{sample}_0_${closer}kb_closer_sorted.bed
-       sort -k1,1 -k2,2n !{sample}_unclustered.bed > !{sample}_unclustered_sorted.bed
+       bcftools query -f '%CHROM\t%POS\t%POS\n' !{sample}.sv.filt.vcf.gz > !{sample}.sv.bed
        
-       bedtools merge -i !{sample}_${closer}kb_${close}kb_close_unique_sorted.bed > !{sample}_${closer}kb_${close}kb_close_unique_sorted_merged.bed
-       bedtools merge -i !{sample}_0_${closer}kb_closer_sorted.bed > !{sample}_0_${closer}kb_closer_sorted_merged.bed
-       bedtools merge -i !{sample}_unclustered_sorted.bed > !{sample}_unclustered_sorted_merged.bed
-             
+       bedtools slop -i !{sample}.sv.bed -g !{hg19} -b 2000 | sort -k1,1 -k2,2n | bedtools merge > !{sample}.sv.${closer}kb.closer.bed
+       bedtools slop -i !{sample}.sv.bed -g !{hg19} -b 10000 > !{sample}.sv.${close}kb.cluster.bed
+       
+       bedtools complement -i !{sample}.sv.${close}kb.cluster.bed -g !{hg19} | sort -k1,1 -k2,2n | bedtools merge > !{sample}.sv.unclustered.bed
+       bedtools subtract -a !{sample}.sv.${close}kb.cluster.bed -b !{sample}.sv.${closer}kb.closer.bed | sort -k1,1 -k2,2n | bedtools merge > !{sample}.sv.${close}kb.close.bed             
        '''
   }
 
@@ -116,7 +110,7 @@ process make_vcfs {
     publishDir params.output_folder+"/INDEL_clusters_VCFs/", mode: 'move', pattern: '*.indel.vcf*'
 
     input:
-    set val(sample), file(sv), file(snv),  file("*closer_sorted_merged.bed"), file("*close_unique_sorted_merged.bed"), file("*unclustered_sorted_merged.bed") from beds
+    set val(sample), file(sv), file(snv),  file("*closer.bed"), file("*close.bed"), file("*unclustered.bed") from beds
     file fasta_ref
     file CRG75
     
