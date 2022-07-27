@@ -71,7 +71,7 @@ CRG75=file(params.CRG75)
 
 process make_sv_beds {
 
-       publishDir params.output_folder+"/SV_BEDs/", mode: 'copy', pattern: '*.bed'
+       publishDir params.output_folder+"/SV_BEDs/Hartwig/", mode: 'copy', pattern: '*.bed'
 
        input:
        set val(sample), file(sv), file(snv) from pairs_list
@@ -105,9 +105,9 @@ process make_sv_beds {
 
 process make_vcfs {
     
-    publishDir params.output_folder+"/SNV_clusters_VCFs/", mode: 'move', pattern: '*.snv.vcf*'    
-    publishDir params.output_folder+"/MNV_clusters_VCFs/", mode: 'move', pattern: '*.mnv.vcf*'
-    publishDir params.output_folder+"/INDEL_clusters_VCFs/", mode: 'move', pattern: '*.indel.vcf*'
+    publishDir params.output_folder+"/SNV_clusters_VCFs/Hartwig/", mode: 'move', pattern: '*.snv.vcf*'    
+    publishDir params.output_folder+"/MNV_clusters_VCFs/Hartwig/", mode: 'move', pattern: '*.mnv.vcf*'
+    publishDir params.output_folder+"/INDEL_clusters_VCFs/Hartwig/", mode: 'move', pattern: '*.indel.vcf*'
 
     input:
     set val(sample), file(sv), file(snv),  file("*closer.bed"), file("*close.bed"), file("*unclustered.bed") from beds
