@@ -54,7 +54,7 @@ if (params.help) {
     exit 0
 }
 
-params.input_file = "/g/strcombio/fsupek_cancer1/SV_clusters_project/Hartwig_all_samples.csv"
+params.input_file = "/g/strcombio/fsupek_cancer1/SV_clusters_project/Hartwig_TCGA_PCAWG_all_samples.csv"
 params.closer_value = 2000
 params.close_value = 10000
 params.output_folder = "/g/strcombio/fsupek_cancer1/SV_clusters_project/"
@@ -71,8 +71,10 @@ CRG75=file(params.CRG75)
 
 process make_sv_beds {
 
-       publishDir params.output_folder+"/SV_BEDs/Hartwig/", mode: 'copy', pattern: '*.bed'
-
+       publishDir params.output_folder+"/SV_BEDs/Hartwig/", mode: 'copy', pattern: 'Hartwig*.bed'
+       publishDir params.output_folder+"/SV_BEDs/TCGA/", mode: 'copy', pattern: 'TCGA*.bed'
+       publishDir params.output_folder+"/SV_BEDs/PCAWG/", mode: 'copy', pattern: 'PCAWG*.bed'
+    
        input:
        set val(sample), file(sv), file(snv) from pairs_list
        file hg19
@@ -105,10 +107,18 @@ process make_sv_beds {
 
 process make_vcfs {
     
-    publishDir params.output_folder+"/SNV_clusters_VCFs/Hartwig/", mode: 'move', pattern: '*.snv.vcf*'    
-    publishDir params.output_folder+"/MNV_clusters_VCFs/Hartwig/", mode: 'move', pattern: '*.mnv.vcf*'
-    publishDir params.output_folder+"/INDEL_clusters_VCFs/Hartwig/", mode: 'move', pattern: '*.indel.vcf*'
-
+    publishDir params.output_folder+"/SNV_clusters_VCFs/Hartwig/", mode: 'move', pattern: 'Hartwig**.snv.vcf*'    
+    publishDir params.output_folder+"/MNV_clusters_VCFs/Hartwig/", mode: 'move', pattern: 'Hartwig**.mnv.vcf*'
+    publishDir params.output_folder+"/INDEL_clusters_VCFs/Hartwig/", mode: 'move', pattern: 'Hartwig**.indel.vcf*'
+    
+    publishDir params.output_folder+"/SNV_clusters_VCFs/TCGA/", mode: 'move', pattern: 'TCGA**.snv.vcf*'    
+    publishDir params.output_folder+"/MNV_clusters_VCFs/TCGA/", mode: 'move', pattern: 'TCGA**.mnv.vcf*'
+    publishDir params.output_folder+"/INDEL_clusters_VCFs/TCGA/", mode: 'move', pattern: 'TCGA**.indel.vcf*'
+    
+    publishDir params.output_folder+"/SNV_clusters_VCFs/PCAWG/", mode: 'move', pattern: 'PCAWG**.snv.vcf*'    
+    publishDir params.output_folder+"/MNV_clusters_VCFs/PCAWG/", mode: 'move', pattern: 'PCAWG**.mnv.vcf*'
+    publishDir params.output_folder+"/INDEL_clusters_VCFs/PCAWG/", mode: 'move', pattern: 'PCAWG**.indel.vcf*'
+    
     input:
     set val(sample), file(sv), file(snv),  file("*closer.bed"), file("*close.bed"), file("*unclustered.bed") from beds
     file fasta_ref
