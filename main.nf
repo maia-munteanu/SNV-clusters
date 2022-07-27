@@ -124,7 +124,6 @@ process make_vcfs {
     bp_per_kb=1000
     close=$((close_bp / bp_per_kb))
     closer=$((closer_bp / bp_per_kb))
-    echo $close $closer
    
     tabix -p vcf !{snv}
     bcftools view -f 'PASS' --regions-file !{CRG75} !{snv} | bcftools sort -Oz > !{sample}.filt.vcf.gz
